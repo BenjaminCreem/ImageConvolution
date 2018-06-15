@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<math.h>
+#include<omp.h>
 
 extern int* imageToMat(char* name,int* dims);
 extern void matToImage(char* name, int* mat, int* dims);
@@ -19,11 +20,7 @@ int main(int argc, char** argv){
     kernel=(int*) malloc(sizeof(*kernel)*kernelSize); //3x3
     for(int i = 0; i < kernelSize; i++)
     {
-        //kerneil[i] = 0;
-        //if(i == kernelSize/2)
-        //{
-            kernel[i] = 1;
-        //}
+        kernel[i] = 1;
     }
 
     //printing the kernel matrix
@@ -45,13 +42,12 @@ int main(int argc, char** argv){
 
     //do stuff with the matrix
     //for each pixel
+    #pragma omp parallel for
     for(int i = 0; i < dims[0]; i++)
     {
         for(int j = 0; j < dims[1]; j++)
         {
             //Get neighborhood matrix
-            //int *local = (int*) malloc(sizeof(*local)*kernelSize);
-            //int adjustVal = (int)((0.5*(double)kernelSize)-0.5);
             int sum = 0;
             int product = 0;
             int newVal;
@@ -60,9 +56,9 @@ int main(int argc, char** argv){
             {
                 for(int y=-k; y<=k; y++)
                 {
-                    if(i-k<0 || j-k<0 || i+k>=dims[1] || j+k>=dims[0])
+                    if(i-k<0 || j-k<0 || i+k>=dims[0] || j+k>=dims[1])
                     {
-                        product = 0;
+                        product = 255;
                     }
                     else
                     {
