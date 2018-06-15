@@ -13,7 +13,8 @@ int main(int argc, char** argv){
     char *name="image.jpg"; //image to conv
     int *dims; //dimensions of image
     int k = 1;
-    int kernelSize = 9; //size of kernel matrix
+    int kw = 2*k+1; //Kernel width = kernel height
+    int kernelSize = kw*kw; //size of kernel matrix
     dims=(int*) malloc(sizeof(*dims)*2);
     kernel=(int*) malloc(sizeof(*kernel)*kernelSize); //3x3
     for(int i = 0; i < kernelSize; i++)
@@ -55,7 +56,7 @@ int main(int argc, char** argv){
             int product = 0;
             int newVal;
             //Make sure we wont go past the edge of the image
-            if(i-k<0 || j-k<0 || i+k>dims[1] || j+k>dims[1])
+            if(i-k<0 || j-k<0 || i+k>dims[1] || j+k>dims[0])
             {
                 newVal = 0;
             }
@@ -65,20 +66,17 @@ int main(int argc, char** argv){
                 {
                     for(int y=-k; y<=k; y++)
                     {
-                        
+                        product = kernel[(k+x)*kw+(k*y)] * mat[(i-x)*dims[0]+(j-y)];  
                     }
                     sum += product;
                 }
+                newVal = sum; ///kw;
             }
-            
+
+            tempmat[i*dims[0]+j] = newVal;
         }
     }
-
-
-
-
     matToImage("newImage.jpg",tempmat,dims);
-
     return 0;
 }
 
