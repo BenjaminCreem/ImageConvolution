@@ -19,11 +19,11 @@ int main(int argc, char** argv){
     kernel=(int*) malloc(sizeof(*kernel)*kernelSize); //3x3
     for(int i = 0; i < kernelSize; i++)
     {
-        kernel[i] = 0;
-        if(i == kernelSize/2)
-        {
+        //kerneil[i] = 0;
+        //if(i == kernelSize/2)
+        //{
             kernel[i] = 1;
-        }
+        //}
     }
 
     //printing the kernel matrix
@@ -56,24 +56,23 @@ int main(int argc, char** argv){
             int product = 0;
             int newVal;
             //Make sure we wont go past the edge of the image
-            if(i-k<0 || j-k<0 || i+k>dims[1] || j+k>dims[0])
+            for(int x=-k; x<= k; x++)
             {
-                newVal = 0;
-            }
-            else //Otherwise, compute new matrix value
-            {
-                for(int x=-k; x<= k; x++)
+                for(int y=-k; y<=k; y++)
                 {
-                    for(int y=-k; y<=k; y++)
+                    if(i-k<0 || j-k<0 || i+k>=dims[1] || j+k>=dims[0])
                     {
-                        product = kernel[(k+x)*kw+(k*y)] * mat[(i-x)*dims[0]+(j-y)];  
+                        product = 0;
+                    }
+                    else
+                    {
+                        product = kernel[(k+x)*kw+(k+y)] * mat[(i-x)*dims[1]+(j-y)];  
                     }
                     sum += product;
                 }
-                newVal = sum; ///kw;
             }
-
-            tempmat[i*dims[0]+j] = newVal;
+            newVal = sum/kernelSize;
+            tempmat[i*dims[1]+j] = newVal;
         }
     }
     matToImage("newImage.jpg",tempmat,dims);
